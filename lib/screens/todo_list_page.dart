@@ -38,6 +38,7 @@ class _TodoListPageState extends State<TodoListPage> {
             itemCount: items.length,
             itemBuilder: (context, index) {
               final item = items[index] as Map;
+              final id = item['_id'] as String;
               return ListTile(
                 leading: CircleAvatar(child: Text('${index + 1}')),
                 title: Text(
@@ -45,6 +46,29 @@ class _TodoListPageState extends State<TodoListPage> {
                 ),
                 subtitle: Text(
                   item['description'],
+                ),
+                trailing: PopupMenuButton(
+                  onSelected: (value) {
+                    if (value == 'edit') {
+                      // go to edit page
+                    } else if (value == 'delete') {
+                      //delete and remove task
+
+                      deleteById(id);
+                    }
+                  },
+                  itemBuilder: (context) {
+                    return [
+                      const PopupMenuItem(
+                        value: 'edit',
+                        child: Text('Edit'),
+                      ),
+                      const PopupMenuItem(
+                        value: 'delete',
+                        child: Text('Delete'),
+                      ),
+                    ];
+                  },
                 ),
               );
             },
@@ -84,5 +108,19 @@ class _TodoListPageState extends State<TodoListPage> {
     setState(() {
       isLoading = false;
     });
+  }
+
+  Future<void> deleteById(id) async {
+    final response = await http.delete(
+      Uri.parse(
+        'https://api.nstack.in/v1/todos/$id',
+      ),
+    );
+    if (response.statusCode == 200) {
+      final filtered = items.where((element) => element['_id'] != id).toList();
+      setState(() {
+        items = filtered;
+      });
+    } else {}
   }
 }
