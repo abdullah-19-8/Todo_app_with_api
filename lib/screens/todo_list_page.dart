@@ -43,14 +43,6 @@ class _TodoListPageState extends State<TodoListPage> {
                     todoController.items[index]['description'],
                   ),
                   trailing: PopupMenuButton(
-                    onSelected: (value) {
-                      if (value == 'edit') {
-                        // go to edit page
-                      } else if (value == 'delete') {
-                        //delete and remove task
-                        todoController.deleteById(todoController.items[index]['id']);
-                      }
-                    },
                     itemBuilder: (context) {
                       return [
                         const PopupMenuItem(
@@ -62,6 +54,16 @@ class _TodoListPageState extends State<TodoListPage> {
                           child: Text('Delete'),
                         ),
                       ];
+                    },
+                    onSelected: (value) {
+                      if (value == 'edit') {
+                        // go to edit page
+                      } else if (value == 'delete') {
+                        //delete and remove task
+                        todoController.deleteById(
+                          todoController.items[index]['_id'],
+                        );
+                      }
                     },
                   ),
                 );

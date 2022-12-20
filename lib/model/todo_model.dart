@@ -20,6 +20,7 @@ class TodoModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+    data['_id'] = id;
     data['title'] = title;
     data['description'] = description;
     data['is_completed'] = isCompleted;
