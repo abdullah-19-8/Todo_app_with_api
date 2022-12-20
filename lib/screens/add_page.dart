@@ -1,8 +1,7 @@
-import 'dart:convert';
-
+// ignore: depend_on_referenced_packages
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-
-import 'package:http/http.dart' as http;
+import 'package:todo_with_api/controller/todo_controller.dart';
 
 class AddTodoPage extends StatefulWidget {
   const AddTodoPage({Key? key}) : super(key: key);
@@ -15,76 +14,55 @@ class _AddTodoPageState extends State<AddTodoPage> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text('Add Todo'),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          TextField(
-            controller: titleController,
-            decoration: const InputDecoration(hintText: 'title'),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          TextField(
-            controller: descriptionController,
-            decoration: const InputDecoration(hintText: 'description'),
-            minLines: 1,
-            maxLines: 5,
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          ElevatedButton(
-            onPressed: submitData,
-            child: const Text('Submit'),
-          ),
-        ],
-      ),
-    );
+  dispose() {
+    titleController.dispose();
+    descriptionController.dispose();
+    super.dispose();
   }
 
-  Future<void> submitData() async {
-    final title = titleController.text;
-    final description = descriptionController.text;
-    final body = {
-      "title": title,
-      "description": description,
-      "is_completed": false,
-    };
-    await http.post(
-      Uri.parse(
-        "https://api.nstack.in/v1/todos",
-      ),
-      body: jsonEncode(body),
-      headers: {"Content-Type": "application/json"},
-    ).then((value) {
-      if (value.statusCode == 201) {
-        titleController.text = '';
-        descriptionController.text = '';
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('success'),
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'failed',
-              style: TextStyle(color: Colors.white),
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<TodoController>(builder: (context, todoController, _) {
+      return Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: const Text('Add Todo'),
+        ),
+        body: ListView(
+          padding: const EdgeInsets.all(20),
+          children: [
+            TextField(
+              controller: titleController,
+              decoration: const InputDecoration(hintText: 'title'),
             ),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+            const SizedBox(
+              height: 20,
+            ),
+            TextField(
+              controller: descriptionController,
+              decoration: const InputDecoration(hintText: 'description'),
+              minLines: 1,
+              maxLines: 5,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            ElevatedButton(
+              onPressed: () => todoController
+                  .submitData(
+                context,
+                titleController.text,
+                descriptionController.text,
+              )
+                  .then((value) async {
+                Navigator.pop(context);
+                await todoController.fetchTodo();
+              }),
+              child: const Text('Submit'),
+            ),
+          ],
+        ),
+      );
     });
   }
 }

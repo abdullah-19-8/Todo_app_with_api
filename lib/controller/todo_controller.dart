@@ -69,7 +69,8 @@ class TodoController with ChangeNotifier {
     }
   }
 
-  Future<void> submitData(String title, String description) async {
+  Future<void> submitData(
+      BuildContext context, String? title, String description) async {
     try {
       final body = {
         "title": title,
@@ -84,16 +85,9 @@ class TodoController with ChangeNotifier {
         headers: {"Content-Type": "application/json"},
       ).then((value) {
         if (value.statusCode == 201) {
-          title = '';
-          description = '';
-          Fluttertoast.cancel();
           Fluttertoast.showToast(msg: 'success');
         } else {
-          Fluttertoast.cancel();
-          Fluttertoast.showToast(
-            msg: 'failed',
-            backgroundColor: Colors.red,
-          );
+          Fluttertoast.showToast(msg: 'failed');
         }
       });
     } catch (e) {
