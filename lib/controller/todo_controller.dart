@@ -29,7 +29,6 @@ class TodoController with ChangeNotifier {
 
   Future<TodoModel> fetchTodo() async {
     setLoading(true);
-    try{
     final response = await http.get(
       Uri.parse(
         'https://api.nstack.in/v1/todos?page=1&limit=10',
@@ -38,7 +37,6 @@ class TodoController with ChangeNotifier {
     TodoModel tempTodo = TodoModel.fromJson(jsonDecode(response.body));
     _todoModel = tempTodo;
 
-    print(response);
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body) as Map;
       final result = json['items'] as List;
@@ -48,13 +46,6 @@ class TodoController with ChangeNotifier {
     setLoading(false);
 
     return tempTodo;
-    }
-    catch(e){
-      _logger.e(e);
-      Fluttertoast.showToast(msg: e.toString());
-      setLoading(false);
-      rethrow;
-    }
   }
 
   Future<void> deleteById(id) async {

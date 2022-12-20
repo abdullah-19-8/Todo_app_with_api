@@ -48,8 +48,7 @@ class _TodoListPageState extends State<TodoListPage> {
                         // go to edit page
                       } else if (value == 'delete') {
                         //delete and remove task
-
-                        todoController.deleteById(todoController.todoModel?.id);
+                        todoController.deleteById(todoController.items[index]['id']);
                       }
                     },
                     itemBuilder: (context) {
