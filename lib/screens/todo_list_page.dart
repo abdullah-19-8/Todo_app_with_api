@@ -1,9 +1,9 @@
-import 'dart:convert';
-
+// ignore: depend_on_referenced_packages
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
+import '../controller/todo_controller.dart';
 import 'add_page.dart';
-import 'package:http/http.dart' as http;
 
 class TodoListPage extends StatefulWidget {
   const TodoListPage({Key? key}) : super(key: key);
@@ -13,14 +13,10 @@ class TodoListPage extends StatefulWidget {
 }
 
 class _TodoListPageState extends State<TodoListPage> {
-  bool isLoading = true;
-  List items = [];
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    fetchTodo();
+    Provider.of<TodoController>(context, listen: false).fetchTodo();
   }
 
   @override
@@ -30,54 +26,54 @@ class _TodoListPageState extends State<TodoListPage> {
         centerTitle: true,
         title: const Text('Todo List'),
       ),
-      body: Visibility(
-        visible: isLoading,
-        replacement: RefreshIndicator(
-          onRefresh: fetchTodo,
-          child: ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              final item = items[index] as Map;
-              final id = item['_id'] as String;
-              return ListTile(
-                leading: CircleAvatar(child: Text('${index + 1}')),
-                title: Text(
-                  item['title'],
-                ),
-                subtitle: Text(
-                  item['description'],
-                ),
-                trailing: PopupMenuButton(
-                  onSelected: (value) {
-                    if (value == 'edit') {
-                      // go to edit page
-                    } else if (value == 'delete') {
-                      //delete and remove task
+      body: Consumer<TodoController>(builder: (context, todoController, _) {
+        return Visibility(
+          visible: todoController.isLoading,
+          replacement: RefreshIndicator(
+            onRefresh: todoController.fetchTodo,
+            child: ListView.builder(
+              itemCount: todoController.items.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: CircleAvatar(child: Text('${index + 1}')),
+                  title: Text(
+                    todoController.items[index]['title'],
+                  ),
+                  subtitle: Text(
+                    todoController.items[index]['description'],
+                  ),
+                  trailing: PopupMenuButton(
+                    onSelected: (value) {
+                      if (value == 'edit') {
+                        // go to edit page
+                      } else if (value == 'delete') {
+                        //delete and remove task
 
-                      deleteById(id);
-                    }
-                  },
-                  itemBuilder: (context) {
-                    return [
-                      const PopupMenuItem(
-                        value: 'edit',
-                        child: Text('Edit'),
-                      ),
-                      const PopupMenuItem(
-                        value: 'delete',
-                        child: Text('Delete'),
-                      ),
-                    ];
-                  },
-                ),
-              );
-            },
+                        todoController.deleteById(todoController.todoModel?.id);
+                      }
+                    },
+                    itemBuilder: (context) {
+                      return [
+                        const PopupMenuItem(
+                          value: 'edit',
+                          child: Text('Edit'),
+                        ),
+                        const PopupMenuItem(
+                          value: 'delete',
+                          child: Text('Delete'),
+                        ),
+                      ];
+                    },
+                  ),
+                );
+              },
+            ),
           ),
-        ),
-        child: const Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
+          child: const Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      }),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.push(
@@ -90,37 +86,5 @@ class _TodoListPageState extends State<TodoListPage> {
         label: const Text('Add Todo'),
       ),
     );
-  }
-
-  Future<void> fetchTodo() async {
-    final response = await http.get(
-      Uri.parse(
-        'https://api.nstack.in/v1/todos?page=1&limit=10',
-      ),
-    );
-    if (response.statusCode == 200) {
-      final json = jsonDecode(response.body) as Map;
-      final result = json['items'] as List;
-      setState(() {
-        items = result;
-      });
-    }
-    setState(() {
-      isLoading = false;
-    });
-  }
-
-  Future<void> deleteById(id) async {
-    final response = await http.delete(
-      Uri.parse(
-        'https://api.nstack.in/v1/todos/$id',
-      ),
-    );
-    if (response.statusCode == 200) {
-      final filtered = items.where((element) => element['_id'] != id).toList();
-      setState(() {
-        items = filtered;
-      });
-    } else {}
   }
 }

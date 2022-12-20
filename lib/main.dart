@@ -1,4 +1,8 @@
+// ignore: depend_on_referenced_packages
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
+import 'package:todo_with_api/controller/todo_controller.dart';
+
 
 import 'screens/todo_list_page.dart';
 
@@ -11,10 +15,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark(),
-      home: const TodoListPage(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => TodoController(),
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData.dark(),
+        home: const TodoListPage(),
+      ),
     );
   }
 }
