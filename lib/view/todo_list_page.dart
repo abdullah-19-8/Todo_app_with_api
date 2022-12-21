@@ -34,7 +34,8 @@ class _TodoListPageState extends State<TodoListPage> {
           title: const Text('Todo List'),
           actions: [
             IconButton(
-              icon: Icon(Icons.light_mode),
+              icon: Icon(
+                  provider.isDarkMode ? Icons.dark_mode : Icons.light_mode),
               onPressed: () => setState(() {
                 provider.changeTheme();
               }),
