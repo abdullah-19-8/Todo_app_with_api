@@ -3,16 +3,31 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_with_api/controller/todo_controller.dart';
 
-class AddTodoPage extends StatefulWidget {
-  const AddTodoPage({Key? key}) : super(key: key);
+class EditTaskPage extends StatefulWidget {
+  final String? title;
+  final String? description;
+  final String? id;
+  const EditTaskPage({
+    Key? key,
+    this.title,
+    this.description,
+    this.id,
+  }) : super(key: key);
 
   @override
-  State<AddTodoPage> createState() => _AddTodoPageState();
+  State<EditTaskPage> createState() => _EditTaskPageState();
 }
 
-class _AddTodoPageState extends State<AddTodoPage> {
+class _EditTaskPageState extends State<EditTaskPage> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
+
+  @override
+  void initState() {
+    titleController.text = widget.title!;
+    descriptionController.text = widget.description!;
+    super.initState();
+  }
 
   @override
   dispose() {
@@ -49,16 +64,19 @@ class _AddTodoPageState extends State<AddTodoPage> {
               height: 20,
             ),
             ElevatedButton(
-              onPressed: () => todoController
-                  .submitData(
-                context,
-                titleController.text,
-                descriptionController.text,
-              )
-                  .then((value) async {
-                Navigator.pop(context);
-                await todoController.fetchTodo();
-              }),
+              onPressed: () {
+                todoController
+                    .editData(
+                  context,
+                  widget.id!,
+                  titleController.text,
+                  descriptionController.text,
+                )
+                    .then((value) async {
+                  Navigator.pop(context);
+                  await todoController.fetchTodo();
+                });
+              },
               child: const Text('Submit'),
             ),
           ],

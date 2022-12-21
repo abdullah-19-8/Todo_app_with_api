@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../controller/todo_controller.dart';
 import 'add_page.dart';
+import 'edit_task_page.dart';
 
 class TodoListPage extends StatefulWidget {
   const TodoListPage({Key? key}) : super(key: key);
@@ -58,6 +59,17 @@ class _TodoListPageState extends State<TodoListPage> {
                     onSelected: (value) {
                       if (value == 'edit') {
                         // go to edit page
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditTaskPage(
+                              title: todoController.items[index]['title'],
+                              description: todoController.items[index]
+                                  ['description'],
+                              id: todoController.items[index]['_id'],
+                            ),
+                          ),
+                        );
                       } else if (value == 'delete') {
                         //delete and remove task
                         todoController.deleteById(

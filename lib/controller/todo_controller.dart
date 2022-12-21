@@ -94,4 +94,32 @@ class TodoController with ChangeNotifier {
       _logger.d(e);
     }
   }
+
+  Future<void> editData(BuildContext context, String id, String? title,
+      String description) async {
+    try {
+      final body = {
+        "title": title,
+        "description": description,
+        "is_completed": false,
+      };
+      await http.put(
+        Uri.parse(
+          "https://api.nstack.in/v1/todos/$id",
+        ),
+        body: jsonEncode(body),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      ).then((value) {
+        if (value.statusCode == 200) {
+          Fluttertoast.showToast(msg: 'success');
+        } else {
+          Fluttertoast.showToast(msg: 'failed');
+        }
+      });
+    } catch (e) {
+      _logger.d(e);
+    }
+  }
 }
