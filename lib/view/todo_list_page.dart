@@ -96,7 +96,7 @@ class _TodoListPageState extends State<TodoListPage> {
             ),
           );
         },
-        label: const Text('Add Todo'),
+        label: const Text('Add Task +'),
       ),
     );
   }
